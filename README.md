@@ -1,117 +1,122 @@
 # Deep-Research-Comparator
 
-Official repository for Deep Research Comparator: A Platform For Fine-grained Human Annotations of Deep Research Agents [Submitted to : EMNLP System Demo 2025]
+Official repository for Deep Research Comparator — a platform designed for fine-grained human annotations of deep research agents.
 
-Preprint Link : https://arxiv.org/abs/2507.05495
+## Demo
+[![Watch the demo](https://img.youtube.com/vi/g4d2dnbdseg/hqdefault.jpg)](https://youtu.be/g4d2dnbdseg?si=zEs7qQIKtVYOCoFi)
 
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Backend Setup](#backend-setup)
+- [Frontend Setup](#frontend-setup)
+- [Configuration](#configuration)
+- [Running the Platform](#running-the-platform)
 
-## ⚙️ Backend - Environment Setup
+## Prerequisites
+- Python 3.12 (Conda recommended for environment isolation)
+- Node.js 18+ and npm
+- PostgreSQL instance accessible to the backend
+- API keys for OpenAI, Serper, Gemini, and Perplexity (depending on enabled agents)
 
-Run the following commands to set up the Python environment:
+## Backend Setup
+Run the following commands from the repository root to install dependencies for the backend and agent services:
 
 ```bash
-cd backend 
-# Create and activate conda environment
+cd backend
+
+# Create and activate the Conda environment
 conda create -n deepresearch_comparator python=3.12
 conda activate deepresearch_comparator
 
-# Install the packages  in development mode
-pip install - r master_requirements.txt
+# Install shared dependencies
+pip install -r master_requirements.txt
 
-# We can also create separate virtual environments for the main backend and the three supported agents
+# Install service-specific dependencies (optional to isolate in dedicated envs)
 cd app
 pip install -r requirements.txt
 
-cd gpt_researcher_server
+cd ../gpt_researcher_server
 pip install -r requirements.txt
 
-cd perplexity_server
+cd ../perplexity_server
 pip install -r requirements.txt
 
-cd Simple_DeepResearch_server
+cd ../Simple_DeepResearch_server
 pip install -r requirements.txt
 ```
-## ⚙️ Frontend - Setup
 
-Run the following commands to set up the Frontend :
+## Frontend Setup
+Install the frontend dependencies:
 
 ```bash
 cd frontend
-
-npm install 
+npm install
 ```
 
+## Configuration
+Each service loads credentials from a `keys.env` file in its root directory.
 
-## 🚀 Run 
+- **Main backend (`backend/app`)**
+  ```bash
+  AWS_ENDPOINT="YOUR_DATABASE_URL"
+  DB_NAME="YOUR_DATABASE_NAME"
+  DB_USERNAME="YOUR_DATABASE_USERNAME"
+  DB_PASSWORD="YOUR_DATABASE_PASSWORD"
+  GPT_RESEARCHER_URL="http://localhost:5004/run"
+  PERPLEXITY_URL="http://localhost:5005/run"
+  BASELINE_URL="http://localhost:5003/run"
+  ```
 
-### 1. Environment Setup 
+- **Simple DeepResearch (`backend/Simple_DeepResearch_server`)**
+  ```bash
+  GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+  CLUEWEB_API_KEY = "YOUR_CLUEWEB_API_KEY"
+  ```
 
-#### Main Backend 
-The main backend present in `backend/app` directory expects the PostgresSQL Database connection parameters and the HTTP API endpoints of the participating agents through the file `keys.env` whose structure is presented below	
+- **Perplexity DeepResearch (`backend/perplexity_server`)**
+  ```bash
+  PERPLEXITY_API_KEY="YOUR_PERPLEXITY_API_KEY"
+  ```
+
+- **GPT Researcher (`backend/gpt_researcher_server`)**
+  ```bash
+  export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+  export SERPER_API_KEY="YOUR_SERPER_API_KEY"
+  export RETRIEVER=serper
+  ```
+
+## Running the Platform
+Use separate terminals to start each component in development mode:
 
 ```bash
-AWS_ENDPOINT = "YOUR_DATABASE_URL"
-DB_NAME = "YOUR_DATABASE_NAME"
-DB_USERNAME = "YOUR_DATABASE_USERNAME"
-DB_PASSWORD = "YOUR_DATABASE_PASSWORD"
-GPT_RESEARCHER_URL = http://localhost:5004/run
-PERPLEXITY_URL = http://localhost:5005/run
-BASELINE_URL = http://localhost:5003/run
-```
-#### SIMPLE DEEPRESEARCH (Gemini 2.5 Flash)
-This agent expects the Gemini API key in a file titled `keys.env` whose structure is presented below
-```bash
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY" 
-```
-#### Perplexity DeepResearch
-This agent expects the Perplexity API key in a file titled `keys.env` whose structure is presented below
-```bash
-PERPLEXITY_API_KEY = "YOUR_PERPLEXITY_API_KEY"
-```
-#### GPT Researcher
-Since we have used Serper as the search engine instead of the default Tavily for our experimented the environment  for GPT Researcher is configured as follows
-```bash
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-export SERPER_API_KEY = "YOUR_SERPER_API_KEY"
-export RETRIEVER=serper
-```
-### 2. Platform Setup (dev environment)
-To set up the platform, we need 5 bash terminals: one for the frontend, one for the main backend, and three for the agents.
-```bash
+# Frontend
 cd frontend
 npm run dev
 ```
+
 ```bash
+# Main backend
 cd backend/app
 python app.py
 ```
 
 ```bash
+# GPT Researcher agent
 cd backend/gpt_researcher_server
 python main.py
 ```
+
 ```bash
+# Perplexity agent
 cd backend/perplexity_server
 python main.py
 ```
+
 ```bash
+# Simple DeepResearch agent
 cd backend/Simple_DeepResearch_server
 python main.py
 ```
-If all the default settings are followed then the platform should be available in : http://localhost:5173/
 
-## 📝 Citation
+By default, the web application is available at `http://localhost:5173/`.
 
-If you find this work useful, please consider starring our repo and citing our paper:
-
-```bibtex
-@misc{chandrahasan2025deepresearchcomparatorplatform,
-      title={Deep Research Comparator: A Platform For Fine-grained Human Annotations of Deep Research Agents}, 
-      author={Prahaladh Chandrahasan and Jiahe Jin and Zhihan Zhang and Tevin Wang and Andy Tang and Lucy Mo and Morteza Ziyadi and Leonardo F. R. Ribeiro and Zimeng Qiu and Markus Dreyer and Akari Asai and Chenyan Xiong},
-      year={2025},
-      eprint={2507.05495},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI},
-      url={https://arxiv.org/abs/2507.05495}, 
-}
-```
